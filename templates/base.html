@@ -1,0 +1,39 @@
+{% load static %}
+<html lang="en">
+<head>
+    
+    {% comment %} put this in block head next time <link rel"stylesheet" type="text/css" href="{% static 'polls/style.css' %}"> {% endcomment %}
+    {% block head %}
+    <!-- JavaScript Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    {% endblock %}
+    <title>{% block title%}Bloggers Site{% endblock %}</title>
+    
+    
+</head>
+<body>
+    <div id="sidebar">
+        {% block sidebar %}
+        <ul>
+            <li><a href="/blog/">Home</a></li>
+            {% if user.is_authenticated %}
+                <br>
+                Hi {{ user.email }}!
+                <li><a href="{% url 'users:profile' %}">Profile</a></li>
+                <li><a href="{% url 'users:change_password' %}">Change Password</a></li>
+                <p><a href="{% url 'logout' %}">Log Out</a></p>
+            {% else %}
+                <p>You are not logged in</p>
+                <p><a href="{% url 'login' %}">Log In</a></p>
+                <p><a href="{% url 'users:register' %}">Register</a></p>
+                <p><a href="{% url 'users:pword_reset' %}">Forgot Password?</a></p>
+            {% endif %}
+        </ul>
+        {% endblock %}
+    </div>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+
+</html>

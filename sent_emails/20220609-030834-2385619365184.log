@@ -1,0 +1,25 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Password reset on localhost:8000
+From: webmaster@localhost
+To: rj10@rj.com
+Date: Wed, 08 Jun 2022 19:08:34 -0000
+Message-ID: <165471531485.29300.13524856192454001669@RJ-NITRO5>
+
+
+You're receiving this email because you requested a password reset for your user account at localhost:8000.
+
+Please go to the following page and choose a new password:
+
+http://localhost:8000/users/reset/Mjk/b6qe2a-36d4afbd548ee5838a10ed00db3d7321/
+
+Your username, in case you’ve forgotten: rj10@rj.com
+
+Thanks for using our site!
+
+The localhost:8000 team
+
+
+
+-------------------------------------------------------------------------------
