@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block sidebar %}
+
+<ul>
+    <li><a href="/blog/">Home</a></li>
+    {% if user.is_authenticated %}
+        <br>
+        Hi {{ user.email }}!
+        <li><a href="{% url 'users:profile' %}">Profile</a></li>
+        <li><a href="{% url 'users:change_password' %}">Change Password</a></li>
+        <p><a href="{% url 'logout' %}">Log Out</a></p>
+    {% else %}
+        <p>You are not logged in</p>
+        <p><a href="{% url 'login' %}">Log In</a></p>
+        <p><a href="{% url 'users:register' %}">Register</a></p>
+        <p><a href="{% url 'users:pword_reset' %}">Forgot Password?</a></p>
+    {% endif %}
+</ul>
+{% endblock %}

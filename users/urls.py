@@ -26,7 +26,7 @@ urlpatterns = [
         name="change_password"),
     path('change_password_success', 
         views.PwordSuccess.as_view(),
-        name='change_password_success')   
+        name='change_password_success'),   
 ]
 
 
