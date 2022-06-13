@@ -8,5 +8,8 @@ import users
 app_name = 'blog'
 urlpatterns = [
     path('', views.PostList.as_view(), name='index'),
-    path('<slug:slug>/', views.PostDetail.as_view(), name='post_detail'),
+    path('create_blog/', views.CreateView.as_view(), name='create_blog'),
+    path('<int:id>/', views.PostDetail.as_view(), name='post_detail'),
+    path('<update_blog>/', views.UpdateView.as_view(), name='update_blog'),
+    
 ]

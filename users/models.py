@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from django.conf import settings
 from django.db.models.signals import post_save
+from PIL import Image
 # Create your models here.
 
 
@@ -34,6 +35,15 @@ class Profile(models.Model):
     )
     def __str__(self):
         return self.user.email
+    def save(self, *args, **kwargs):
+        super().save()
+
+        img = Image.open(self.image.path)
+
+        if img.height > 100 or img.width > 100:
+            new_img = (300, 300)
+            img.thumbnail(new_img)
+            img.save(self.image.path)
 #Function create_profile and create_profile to save new register user by getting the users.id and register users.id it to profile database
 def create_profile(sender, instance, created, **kwargs):
     if created:

@@ -1,23 +1,33 @@
 from django import forms
+from django.db import models
+from django.conf import settings
 from .views import authenticate
 from django.core.validators import RegexValidator
 from .models import Post
 
+User = settings.AUTH_USER_MODEL
 
-STATUS_CHOICES = [
-    (1, 'Publish'),
-    (2, 'Draft'),
-]
+
 class CreatePostForm(forms.ModelForm):
     title = forms.CharField(label="Title", required=True, max_length=100)
-    content = forms.TextField(label="Content", required=True)
-    status = forms.MultipleChoiceField(required=True, 
-                                        widget=forms.CheckboxSelectMultiple,
-                                        choices=STATUS_CHOICES,
-    )
+    # title_image = forms.ImageField(required=False)
+    content = forms.CharField( widget=forms.Textarea, label="Content", required=True)
     class Meta:
         model = Post
         fields = (
             'title',
+            'title_image',
+            'content'
+        )
+
+class UpdateForm(forms.ModelForm):
+    title = forms.CharField(label="Title", required=True, max_length=100)
+    content = forms.CharField( widget=forms.Textarea, label="Content", required=True)
+    
+    class Meta:
+        model = Post
+        fields = (
+            'title',
+            'title_image',
             'content'
         )

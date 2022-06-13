@@ -2,11 +2,28 @@
 {% block title %}Login{% endblock %}
 {% block content %}
 <h1>Login</h1>
+<div>
+    <form action="{% url 'users:login' %}" method="post" novalidate>
+        <div class="form-group">
+            {% csrf_token %}
 
-<form action="{% url 'users:login' %}" method="post" novalidate>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" value="submit">Login</button>
-    
-</form>
+            {% for field in form %}
+                <div class="fieldWrapper">
+                    {{ field.errors }}
+                    {{ field.label_tag }} {{ field }}
+                </div>
+            {% endfor %}
+
+
+            <a href="{% url 'users:pword_reset' %}">Forgot Password?</a>
+            <button type="submit" value="submit">Login</button>
+        </div>
+        
+    </form>
+</div>
+
+
+
+
+
 {% endblock %}

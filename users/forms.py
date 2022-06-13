@@ -34,11 +34,27 @@ class LoginForm(forms.Form):
         'email',
         'password'
     )
+
+    
     def auth(self, request):
         # import pdb; pdb.set_trace()
         auth_email = self.cleaned_data.get('email')
         pword = self.cleaned_data.get('password')
         return authenticate(request, username=auth_email, password=pword)
+    
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if email is None:
+            raise forms.ValidationError({'email': ["Put email."]})
+
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        if password is None:
+            raise forms.ValidationError({'password': ["Put password."]})
+            
+
+
+
 
 
 

@@ -1,19 +1,30 @@
 {% extends "base.html"%}
 {% block content %}
 <header>
-    <h3>Welcome to Blogger Site</h3>
+    <h3 style="text-align: center">Welcome to Blogger Site</h3>
 </header>
 <div>
-    <h2>Thou Articles</h2>
+  <a href="{% url 'blog:create_blog' %}" class="btn btn-primary">Sample</a>
+    <h2 style="text-align: center" >Thou Articles</h2>
 </div>
 <div>
-    {% for post in post_list%}
-    <div>
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.author }}</p>
-        <p>{{ post.content|slice:":200" }}</p>
-        <a href="{% url 'blog:post_detail' post.slug  %}" class="btn btn-primary">Read More &rarr;</a>
-    </div>
+    {% for post in context%}
+    <div class="container">
+        <div class="row">
+          <div class="col">
+          </div>
+          <div class="col-6">
+            <h2>{{ post.title }}</h2>
+            <p><img src="/media/{{post.title_image}}"></p>
+            <p>{{ post.author }}</p>
+            <p>{{ post.content|slice:":200" }}</p>
+            <a href="{% url 'blog:post_detail' post.id %}" class="btn btn-primary">Read More &rarr;</a>
+          </div>
+          <div class="col">
+          </div>
+          </div>  
+      </div>
+    <br>
     {% endfor %}
 </div>
 {% endblock %}

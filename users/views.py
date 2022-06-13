@@ -55,6 +55,7 @@ class LoginView(TemplateView):#TemplateView
                 form = LoginForm(request.POST)
                 return render(request, 'users/login.html', {'form':form})
         else:
+            messages.error(request, "Unsuccessful registration. Invalid information.")
             return render(request, 'users/login.html', {'form':form})
 
 class RegisterView(TemplateView):
@@ -80,6 +81,7 @@ class RegisterView(TemplateView):
 
             return HttpResponseRedirect(reverse('users:login'))
         else:
+            messages.error(request, "Unsuccessful registration. Invalid information.")
             return render(request, 'users/register.html', {"form":form})
 
     

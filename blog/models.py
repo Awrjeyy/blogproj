@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from PIL import Image
 # Create your models here.
 
 STATUS = (
@@ -10,15 +11,27 @@ STATUS = (
 User = settings.AUTH_USER_MODEL
 class Post(models.Model):
     title = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(max_length=255, unique=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
+    title_image = models.ImageField(blank=True, null=True, default='default_blog.jpg',
+        upload_to='blog_pics'
+    )
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     updated_on = models.DateTimeField(auto_now=True)
     content = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
-    status = models.IntegerField(choices=STATUS, default=0)
+    
 
     class Meta:
         ordering = ['-created_on']
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        super().save()
+
+        img = Image.open(self.title_image.path)
+
+        if img.height > 100 or img.width > 100:
+            new_img = (750, 450)
+            img.thumbnail(new_img)
+            img.save(self.title_image.path)

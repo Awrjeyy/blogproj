@@ -4,8 +4,10 @@
 <h1>Register</h1>
 
 <form action="{% url 'users:register' %}" method="post" novalidate>
+    <div class="form-group">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" id="submit">Register</button>
+    </div>
 </form>
 {% endblock %}

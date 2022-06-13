@@ -1,8 +1,9 @@
 {%extends "base.html"%}
 {% block content %}
 <div>
-    <h1>{% block title %} {{ object.title }} {% endblock title %}</h1>
+    <h1>{% block title %} {{ post.title }} {% endblock title %}</h1>
+    <p><img src="/media/{{post.title_image}}"></p>
     <p class=" text-muted">{{ post.author }} | {{ post.created_on }}</p>
-    <p class="card-text ">{{ object.content | safe }}</p>
+    <p class="card-text ">{{ post.content | safe }}</p>
   </div>
 {% endblock %}
