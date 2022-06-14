@@ -146,8 +146,17 @@ def password_reset_request(request):
 class ProfileView(TemplateView):
     def get(self, request):
         if request.user.is_authenticated:
-            user_form = UserUpdate
-            profile_form = ProfileUpdate
+            user = CustomUser.objects.get(id=request.user.id)
+            p_user = Profile.objects.get(user_id=request.user.id)
+            initial_userdata = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            }
+            initial_profdata = {
+                'image': p_user.image,
+            }
+            user_form = UserUpdate(initial_userdata)
+            profile_form = ProfileUpdate(initial_profdata)
             context = {
                 'user_form':user_form,
                 'profile_form':profile_form
@@ -167,17 +176,25 @@ class ProfileView(TemplateView):
                                         instance=p_user)
             
         # import pdb; pdb.set_trace()
-        if request.method == 'POST':
+        
             
-            if user_form.is_valid() and profile_form.is_valid():
-                user_form.save()
-                profile_form.save()
-                messages.success(request, f'Account has been updated')
-                return redirect('users:profile')
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, f'Account has been updated')
+            return redirect('users:profile')
+
         else:
             # import pdb; pdb.set_trace()
-            user_form = ProfileUpdate(request.user)
-            profile_form = ProfileUpdate(request.user.profile)
+            initial_userdata = {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            }
+            initial_profdata = {
+                'image': p_user.image,
+            }
+            user_form = ProfileUpdate(initial_userdata)
+            profile_form = ProfileUpdate(initial_profdata)
             
         context = {
             'user_form':user_form,

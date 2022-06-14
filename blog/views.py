@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.views import generic
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy, reverse
+from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.views.generic.base import TemplateView
 
@@ -15,6 +16,25 @@ from .models import Post
 #     queryset = Post.objects.filter(status=1).order_by('-created_on')
 #     template_name = 'blog/index.html'
 
+
+def LikeView(request, id):
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    isliked = False
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        isliked = False
+    else:
+        post.likes.add(request.user)
+        isliked = True
+    return HttpResponseRedirect(reverse('blog:post_detail', args=[id]))
+
+def DeletePost(request, id):
+    # import pdb; pdb.set_trace()
+    post = Post.objects.get(id=id, author_id=request.user)
+    if post.author_id == request.user.id:
+        post_to_delete = post
+        post_to_delete.delete()
+    return HttpResponseRedirect(reverse('blog:index'))
 
 class PostList(TemplateView):
     # import pdb; pdb.set_trace()
@@ -43,7 +63,17 @@ class PostDetail(TemplateView):
     
     def get(self, request, id):
         post = get_object_or_404(Post, id=id)
-        return render(request, 'blog/detail.html', {'post':post})
+        totallikes = post.total_likes()
+        isliked = False
+        if post.likes.filter(id=request.user.id).exists():
+            isliked = True
+
+
+        return render(request, 
+                        'blog/detail.html', 
+                        {'post':post,
+                         'totallikes':totallikes,
+                         'isliked':isliked,})
 
 
 class CreateView(TemplateView):
@@ -56,7 +86,7 @@ class CreateView(TemplateView):
         return render(request, 'blog/create.html', {"form":form})
 
     def post(self, request):
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         
         form = CreatePostForm(request.POST, request.FILES)
         
@@ -73,24 +103,53 @@ class CreateView(TemplateView):
         
         return render(request, 'blog/create_blog.html', {'form':form})
 
-class UpdateView(TemplateView):
-    form_class = UpdateForm        
-    def get(self, request):
-        form = UpdateForm
-        return render(request,'blog/update.html',{'form':form})
 
-    def post(self, request):
-        up_form = request.user
+
+class UpdateView(TemplateView):
+    form_class = UpdateForm
+            
+    def get(self, request, id):
+        # import pdb; pdb.set_trace()
+        post_id = Post.objects.get(author_id=request.user.id)
+        if post_id.author_id == request.user.id:
+            post = Post.objects.filter(author_id=request.user).get(id=id)
+            
+            initial_data = {
+                'title': post.title,
+                'title_image': post.title_image,
+                'content': post.content,
+            }
+            form = UpdateForm(initial=initial_data)
+            context = {
+                'form': form,
+                'post': post,
+            }
+            return render(request,'blog/update.html', context)
+        else:
+            messages.error(request, "You're not the author of this post")
+            return redirect('blog:index')
+
+    def post(self, request, id):
+        post = Post.objects.get(id=id, author_id=request.user)
         new_blog = UpdateForm(request.POST,
                                 request.FILES,
-                                instance=up_form)
+                                instance=post)
         
         if new_blog.is_valid():
             new_blog.save()
-            return HttpResponseRedirect(reverse('blog:update_blog'))
+            return redirect('blog:post_detail',post.id)
         else:
-            new_blog = UpdateForm(request.user)
-        return render(request, 'blog/update.html', {'new_blog':new_blog})
+            initial_data = {
+                'title': post.title,
+                'title_image': post.title_image,
+                'content': post.content,
+            }
+            new_blog = UpdateForm(initial_data)
+            context = {
+                'new_blog': new_blog,
+                'post': post,
+            }
+        return render(request, 'blog/update.html', context)
 
         # b_user = get_object_or_404(Post, author_id=request.user.id)
         # form = CreatePostForm(request.POST)

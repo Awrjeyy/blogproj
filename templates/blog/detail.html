@@ -1,9 +1,34 @@
 {%extends "base.html"%}
 {% block content %}
+
 <div>
     <h1>{% block title %} {{ post.title }} {% endblock title %}</h1>
-    <p><img src="/media/{{post.title_image}}"></p>
-    <p class=" text-muted">{{ post.author }} | {{ post.created_on }}</p>
-    <p class="card-text ">{{ post.content | safe }}</p>
-  </div>
+    {% if user.is_authenticated %}
+      <p><a href="{% url 'blog:update_blog' post.id %}">Edit</a></p>
+      <p><a href="{% url 'blog:delete_post' post.id %}">Delete</a></p>
+      <p><img src="/media/{{post.title_image}}"></p>
+      <p class=" text-muted">{{ post.author }} | {{ post.created_on }}</p>
+      <p class="card-text ">{{ post.content | safe }}</p>
+    {%else%}
+      <p><img src="/media/{{post.title_image}}"></p>
+      <p class=" text-muted">{{ post.author }} | {{ post.created_on }}</p>
+      <p class="card-text ">{{ post.content | safe }}</p>
+    {%endif%}
+</div>
+<br><br><br>
+<form action="{% url 'blog:like_post' post.id %}" method="POST">
+  {% csrf_token %}
+    {% if isliked %}
+      <button type="submit", 
+              name="post_id", 
+              value="{{post.id}}", 
+              class="btn btn-danger btn-sm">Unlike</button> 
+    {% else %}        
+      <button type="submit", 
+              name="post_id", 
+              value="{{post.id}}", 
+              class="btn btn-primary btn-sm">Like</button>       
+    {% endif %}
+    - {{ totallikes }} Likes
+</form>
 {% endblock %}

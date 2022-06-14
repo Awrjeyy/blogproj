@@ -21,7 +21,8 @@ class CreatePostForm(forms.ModelForm):
         )
 
 class UpdateForm(forms.ModelForm):
-    title = forms.CharField(label="Title", required=True, max_length=100)
+    title = forms.CharField(label="Title", required=True, max_length=100
+                            , widget=forms.TextInput(attrs={'placeholder': 'title'}))
     content = forms.CharField( widget=forms.Textarea, label="Content", required=True)
     
     class Meta:
