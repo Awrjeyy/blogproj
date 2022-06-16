@@ -7,9 +7,9 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.views.generic.base import TemplateView
 
-from blog.forms import CreatePostForm, UpdateForm
+from blog.forms import CommentForm, CreatePostForm, UpdateForm
 from users.models import CustomUser
-from .models import Post
+from .models import Post, Comment
 # Create your views here.
 
 # class PostList(generic.ListView):
@@ -18,13 +18,13 @@ from .models import Post
 
 
 def LikeView(request, id):
-    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))#gets the post
     isliked = False
-    if post.likes.filter(id=request.user.id).exists():
-        post.likes.remove(request.user)
+    if post.likes.filter(id=request.user.id).exists():#checks if the user liked the post
+        post.likes.remove(request.user)#if yes unlike
         isliked = False
     else:
-        post.likes.add(request.user)
+        post.likes.add(request.user)#if not then likes
         isliked = True
     return HttpResponseRedirect(reverse('blog:post_detail', args=[id]))
 
@@ -43,9 +43,12 @@ class PostList(TemplateView):
 
     def get(self, request):
         # import pdb; pdb.set_trace()
+        
         context = Post.objects.all().order_by('-created_on')
+        user_list = CustomUser.objects.all()
         context_dict = {
-            'context':context
+            'context': context,
+            'user_list': user_list
         }
         return render(request, self.template_name, context_dict)
        
@@ -62,18 +65,45 @@ class PostDetail(TemplateView):
     template_name = 'blog/detail.html'
     
     def get(self, request, id):
-        post = get_object_or_404(Post, id=id)
-        totallikes = post.total_likes()
+        post = get_object_or_404(Post, id=id)#grabs the post via post.id
+        totallikes = post.total_likes()#since the likes is a ManyToManyFields then you can just do this and it will count
+        user_list = CustomUser.objects.all()
         isliked = False
+        form = CommentForm
+        # import pdb; pdb.set_trace()
+        comments = post.comment_set.all()
         if post.likes.filter(id=request.user.id).exists():
             isliked = True
-
+        context = {'post':post,
+                    'totallikes':totallikes,
+                    'isliked':isliked,
+                    'form':form,
+                    'comments':comments,
+                    'user_list': user_list
+                    }
 
         return render(request, 
-                        'blog/detail.html', 
-                        {'post':post,
-                         'totallikes':totallikes,
-                         'isliked':isliked,})
+                    'blog/detail.html', 
+                    context)
+
+    def post(self, request, id):
+        post = Post.objects.get(id=id)
+        form = CommentForm(request.POST)
+        # import pdb; pdb.set_trace()
+        
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post_id = id
+            comment.user_id = request.user.id
+            comment.save()
+            
+            messages.success(request, f'You have posted a comment')
+            return redirect('blog:post_detail',post.id)
+        else:
+            messages.error(request, f'Bruh')
+            return redirect('blog:index')
+
+            
 
 
 class CreateView(TemplateView):
@@ -95,13 +125,13 @@ class CreateView(TemplateView):
             blog = form.save(commit=False)
             blog.author=request.user
             blog.save()
-            return HttpResponseRedirect(reverse('blog:create_blog'))
+            return HttpResponseRedirect(reverse('blog:index'))
             #form.save(commit=False), temporarily halts the save function until 
             #there is more to be added
         else:
             form = CreatePostForm(request.user)
         
-        return render(request, 'blog/create_blog.html', {'form':form})
+        return render(request, 'blog/index.html', {'form':form})
 
 
 
@@ -151,24 +181,6 @@ class UpdateView(TemplateView):
             }
         return render(request, 'blog/update.html', context)
 
-        # b_user = get_object_or_404(Post, author_id=request.user.id)
-        # form = CreatePostForm(request.POST)
-        # # import pdb; pdb.set_trace()
-        # if request.method == 'POST':
-            
-        #     if form.is_valid():
-        #         blog = form.save()
-        #         return redirect('blog:index')
 
-        # else:
-        #     form = CreatePostForm(request.user.blog)
-        
-        # context = {
-        #     'blog':blog
-        # }
-
-        # return render(request, 'blog/index.html', context)
-
-# form = CreatePostForm(request.POST,
-#                                 request.FILES,
-#                                 instance=b_user)
+def search(request):
+    return request

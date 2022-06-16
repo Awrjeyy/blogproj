@@ -2,7 +2,7 @@
 {% block sidebar %}
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/blog/">BlogSite</a>
+    <a class="navbar-brand" href="/blog/">Thou Site</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -11,13 +11,24 @@
       
         <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="/blog/">Home</a>
+          <a class="nav-link" href="/blog/">Blogs</a>
+          
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/users/">Users</a>
         </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        
+        <form action="{%url 'users:search_results' %}" method="get" class="form-inline">
+            <input type="text" name="q" placeholder="Enter Keyword" value="{{ request.GET.q }}" class="form-control">
+            <select name="filter" class="form-control">
+                <option value="all">All</option>
+                <option value="blog">Blog</option>
+                <option value="profile">Profile</option>
+                
+            </select>
+            <input type="submit" value="Search" class="btn btn-default">
         </form>
         
             <li class="nav-item dropdown">
@@ -27,7 +38,7 @@
             {% if user.is_authenticated %}
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{% url 'blog:create_blog' %}">Create a Blog</a>
-                <a class="dropdown-item" href="{% url 'users:profile' %}">Profile</a>
+                <a class="dropdown-item" href="{% url 'users:profile' user.id %}">Profile</a>
                 <a class="dropdown-item" href="{% url 'users:change_password' %}">Settings</a>
                 <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
             </div>
@@ -43,7 +54,7 @@
       </ul>
       
     </div>
-  </nav>
+</nav>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>

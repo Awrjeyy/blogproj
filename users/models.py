@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _ 
@@ -15,7 +16,7 @@ class CustomUser(AbstractUser):
     username = None
     #Makes the email field required and unique
     email = models.EmailField(_('email address'), unique=True)
-
+    following = models.ManyToManyField(User, related_name="user_following")
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -23,9 +24,11 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+    
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(default=NULL)
     image = models.ImageField(default='default.jpg',
         upload_to='profile_pics'
     )

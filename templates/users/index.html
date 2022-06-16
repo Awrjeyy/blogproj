@@ -1,10 +1,43 @@
 {% extends "base.html"%}
 {% block content %}
 <header>
-    <h3>Welcome to Blogger Site</h3>
+    <h3 style="text-align: center">Welcome to Blogger Site</h3>
 </header>
 <div>
-    <p>You have been logged out!</p>
+  <h2 style="text-align: center" >Thou User's Profile</h2>
+</div>
+<div>
+    <div class="container">
+        <div class="row">
+          <div class="col">
+          </div>
+          <div class="col-6">
+            {% for users in profile_list%}
+              
+              <div class="card" style="width: 33rem;">
+                <img src="/media/{{users.image}}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    {% for user in user_list %}
+                      {% if user.id == users.user_id %}
+                        <h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
+                        <h6 class="card-title">{{ user.email }}</h6>
+                      
+                  <p class="card-text">{{users.bio|slice:":50"}}</p>
+                  <a href="{% url 'users:profile' users.id %}" class="btn btn-primary">View Profile &rarr;</a>
+                  {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              
+            <br>
+            {% endfor %}
+          </div>
+          <div class="col">
+          </div>
+          </div>  
+      </div>
+    <br>
     
 </div>
+
 {% endblock %}

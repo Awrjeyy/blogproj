@@ -1,3 +1,4 @@
+from tkinter import CASCADE
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -39,3 +40,16 @@ class Post(models.Model):
             new_img = (750, 450)
             img.thumbnail(new_img)
             img.save(self.title_image.path)
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta: 
+        ordering = ['-created_on']
+
+    def __str__(self):
+        return 'Comment by {}'.format(self.user)

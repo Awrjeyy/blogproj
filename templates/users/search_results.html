@@ -1,0 +1,58 @@
+{% extends 'base.html'%}
+{% block title %}Search Results{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+      <div class="col">
+        
+      </div>
+      <div class="col-6">
+        {% if post_results.exists  %}
+          <h4>Posts</h4>
+          {%for post in post_results%}
+            <div class="card" style="width: 33rem;">
+              <img src="/media/{{post.title_image}}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">{{ post.title }}</h5>
+                {% for user in user_results %}
+                  {% if user.id == post.author_id %}
+                    <h6 class="card-title">{{ user.first_name }} {{ user.last_name }}</h6>
+                  {% endif %}
+                {% endfor %}
+                <p class="card-text">{{ post.content|slice:":50" }}</p>
+                <a href="{% url 'blog:post_detail' post.id %}" class="btn btn-primary">Read More &rarr;</a>
+              </div>
+            </div>
+            <br>
+          {%endfor%}
+        {%endif%}  
+        {% if user_results.exists %}  
+        <h4>User's Profile</h4>
+        {% for users in user_results%}
+            
+        <div class="card" style="width: 33rem;">
+          {% for prof in crossref_profile %}
+                {% if prof.user_id == users.id %}
+                  <img src="/media/{{prof.image}}" class="card-img-top" alt="...">
+                  <div class="card-body">
+              
+                  <h5 class="card-title">{{ users.first_name }} {{ users.last_name }}</h5>
+                  <h6 class="card-title">{{ users.email }}</h6>
+                
+            <p class="card-text">{{prof.bio|slice:":50"}}</p>
+            <a href="{% url 'users:profile' prof.id %}" class="btn btn-primary">View Profile &rarr;</a>
+            {% endif %}
+            {% endfor %}        
+          </div>
+        </div>
+        
+      <br>
+      {% endfor %}
+      {%endif%}   
+      </div>
+      <div class="col">
+        
+      </div>
+    </div>
+</div>    
+{% endblock %}

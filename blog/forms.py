@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from .views import authenticate
 from django.core.validators import RegexValidator
-from .models import Post
+from .models import Comment, Post
 
 User = settings.AUTH_USER_MODEL
 
@@ -32,3 +32,10 @@ class UpdateForm(forms.ModelForm):
             'title_image',
             'content'
         )
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = {
+            'content',
+        }

@@ -61,7 +61,7 @@ class LoginForm(forms.Form):
 class UserUpdate(forms.ModelForm):
     first_name = forms.CharField(label="First name", required=False, max_length=100)
     last_name = forms.CharField(label="Last name", required=False, max_length=100)
-
+    
     class Meta:
         model = CustomUser
         fields = (
@@ -71,11 +71,14 @@ class UserUpdate(forms.ModelForm):
         )
 
 class ProfileUpdate(forms.ModelForm):
+    bio = forms.CharField( widget=forms.Textarea, label="Bio", required=False)
     image = forms.ImageField(required=False)
 
     class Meta:
         model = Profile
         fields = (
+            
+            'bio',
             'image',
 
         )

@@ -10,8 +10,9 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('register/', views.RegisterView.as_view(), name='register'),
-    path('profile/', views.ProfileView.as_view(), name='profile'),
+    path('<int:id>/profile/', views.ProfileView.as_view(), name='profile'),
     path("pword_reset", views.password_reset_request, name="pword_reset"),
+    path("search_results/", views.SearchView.as_view(), name="search_results"),
     path('pword_reset_done/', 
         auth_views.PasswordResetDoneView.as_view(template_name='users/pword_reset_done.html'), 
         name='pword_reset_done'),
@@ -26,7 +27,8 @@ urlpatterns = [
         name="change_password"),
     path('change_password_success', 
         views.PwordSuccess.as_view(),
-        name='change_password_success'),   
+        name='change_password_success'),
+    path('<int:id>/follow', views.FollowingView, name='follow'),
 ]
 
 
