@@ -1,13 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Register{% endblock %}
 {% block content %}
-<h1>Register</h1>
-
-<form action="{% url 'users:register' %}" method="post" novalidate>
-    <div class="form-group">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" id="submit">Register</button>
+<div class="container">
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col">
+            <div class="card" style="width: 25rem;">
+                <h1 style="text-align: center">Register</h1>
+                <div class="card-body">
+                    <form action="{% url 'users:register' %}" method="post" novalidate>
+                        <div class="form-group">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" id="submit">Register</button>
+                        </div>
+                    </form>
+                </div>
+              </div>
+        </div>
+        <div class="col">
+        </div>
     </div>
-</form>
+</div>
+
+
+
+
 {% endblock %}

@@ -6,6 +6,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.views.generic.base import TemplateView
+from django.core.paginator import Paginator
 
 from blog.forms import CommentForm, CreatePostForm, UpdateForm
 from users.models import CustomUser
@@ -26,7 +27,7 @@ def LikeView(request, id):
     else:
         post.likes.add(request.user)#if not then likes
         isliked = True
-    return HttpResponseRedirect(reverse('blog:post_detail', args=[id]))
+    return HttpResponseRedirect(reverse('blog:post_detail', args=[id]))#returns to specific post using after liking
 
 def DeletePost(request, id):
     # import pdb; pdb.set_trace()
@@ -36,6 +37,15 @@ def DeletePost(request, id):
         post_to_delete.delete()
     return HttpResponseRedirect(reverse('blog:index'))
 
+class DeleteView(TemplateView):
+    template_name='blog/delete.html'
+
+    def get(self, request, id):
+        post = get_object_or_404(Post, id=id)
+        context = {
+            'post':post
+        }
+        return render(request, 'blog/delete.html', context)
 class PostList(TemplateView):
     # import pdb; pdb.set_trace()
    
@@ -46,9 +56,22 @@ class PostList(TemplateView):
         
         context = Post.objects.all().order_by('-created_on')
         user_list = CustomUser.objects.all()
+        p = Paginator(context, 5)  # creating a paginator object
+        # getting the desired page number from url
+        page_number = request.GET.get('page')
+        
+        try:
+            page_obj = p.get_page(page_number)  # returns the desired page object
+        except PageNotAnInteger:
+            # if page_number is not an integer then assign the first page
+            page_obj = p.page(1)
+        except EmptyPage:
+            # if page is empty then return last page
+            page_obj = p.page(p.num_pages)
         context_dict = {
             'context': context,
-            'user_list': user_list
+            'user_list': user_list,
+            'page_obj': page_obj,
         }
         return render(request, self.template_name, context_dict)
        
@@ -129,9 +152,8 @@ class CreateView(TemplateView):
             #form.save(commit=False), temporarily halts the save function until 
             #there is more to be added
         else:
-            form = CreatePostForm(request.user)
-        
-        return render(request, 'blog/index.html', {'form':form})
+            
+            return render(request, 'blog/create.html', {'form':form})
 
 
 
@@ -140,7 +162,9 @@ class UpdateView(TemplateView):
             
     def get(self, request, id):
         # import pdb; pdb.set_trace()
-        post_id = Post.objects.get(author_id=request.user.id)
+        temp_post = id
+        user_id = CustomUser.objects.get(id=request.user.id)
+        post_id = Post.objects.get(author_id=user_id, id=temp_post)
         if post_id.author_id == request.user.id:
             post = Post.objects.filter(author_id=request.user).get(id=id)
             
@@ -182,5 +206,3 @@ class UpdateView(TemplateView):
         return render(request, 'blog/update.html', context)
 
 
-def search(request):
-    return request

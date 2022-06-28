@@ -13,7 +13,7 @@
           <div class="col">
           </div>
           <div class="col-6">
-            {% for post in context%}
+            {% for post in page_obj.object_list%}
               
               <div class="card" style="width: 33rem;">
                 <img src="/media/{{post.title_image}}" class="card-img-top" alt="...">
@@ -39,4 +39,33 @@
     <br>
     
 </div>
+{% block pagination %}
+<center >
+<div class="container" aria-label="Page navigation example" >
+  <div class="row">
+    <div class="col">
+    </div>
+    <div class="col-6">
+      <ul class="nav justify-content-center" >
+      {%if page_obj.has_previous %} {# whether the previous page exists #}
+      <li class="page-item">  
+        <a href="?page={{page_obj.previous_page_number}}">Previous</a> {# link to the prev page #}
+      </li>
+      {% endif %}
+      <li class="page-item active" aria-current="page">
+        <span>&nbsp;&nbsp;{{page_obj.number}}&nbsp;&nbsp;</span> {# the current page number #}
+      </li>
+      {%if page_obj.has_next %} {# whether the next page exists #}
+      <li class="page-item"> 
+        <a href="?page={{page_obj.next_page_number}}">Next</a> {# link to the next page #}
+      </li>
+      {% endif %}
+      </ul>
+    </div>
+  <div class="col">
+  </div>
+</div>
+</div>
+</center>
+{% endblock %}
 {% endblock %}

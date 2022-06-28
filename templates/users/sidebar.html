@@ -39,7 +39,8 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{% url 'blog:create_blog' %}">Create a Blog</a>
                 <a class="dropdown-item" href="{% url 'users:profile' user.id %}">Profile</a>
-                <a class="dropdown-item" href="{% url 'users:change_password' %}">Settings</a>
+                <a class="dropdown-item" href="{% url 'users:update_profile' user.id %}">Update Profile</a>
+                <a class="dropdown-item" href="{% url 'users:change_password' %}">Change Password</a>
                 <a class="dropdown-item" href="{% url 'logout' %}">Log Out</a>
             </div>
            

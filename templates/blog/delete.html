@@ -4,7 +4,7 @@
 <h1>Delete this Blog Post</h1>
 <h3>{{ post.title }}</h3>
 
-<form action="{% url 'blog:delete_post' post.id %}" method="post" enctype="multipart/form-data" novalidate >
+<form action="{% url 'blog:delete_confirm' post.id %}" method="post" enctype="multipart/form-data" novalidate >
     <div class="form-group">
     {% csrf_token %}
         <strong>Are you sure?</strong><br>

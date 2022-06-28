@@ -11,6 +11,7 @@ urlpatterns = [
     path('login/', views.LoginView.as_view(), name='login'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('<int:id>/profile/', views.ProfileView.as_view(), name='profile'),
+    path('<int:id>/update_profile', views.UpdateProfileView.as_view(), name='update_profile'),
     path("pword_reset", views.password_reset_request, name="pword_reset"),
     path("search_results/", views.SearchView.as_view(), name="search_results"),
     path('pword_reset_done/', 

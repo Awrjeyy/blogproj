@@ -20,7 +20,7 @@
                 <form action="{% url 'users:follow' userid.id %}" method="POST">
                   {% csrf_token %}
                   {% if userid.id == user.id %}
-
+                    
                   {% else %}
                     {% if isFollowing %}
                       <button type="submit", 
@@ -53,33 +53,7 @@
               </div>
             </div>
             <br>
-           <!-- FORM HERE -->
-           <div class="card-body">
-            {% if userid.id == user.id%}
-                  <form action="{% url 'users:profile' userid.id %}" method="POST" enctype="multipart/form-data">
-                    <div class="form-group">  
-                    {% csrf_token %}
-                      <div class="col">
-                      {{ user_form }}
-                      </div>
-                    </div>  
-                      <br>
-                    <div class="form-group">  
-                      <div class="col-2">
-                      {{profile_form}}
-                      </div>
-                    </div>  
-                      <div class="form-group">
-                        <div class="col">
-                          <button class="btn btn-outline-info" type="submit">Update</button>
-                        <div class="col">
-                      </div>
-                    
-                  </form>
-                {% else %}
-                  
-                {% endif %}
-              </div>
+           
             
             </div>  
           </div>
@@ -93,6 +67,41 @@
   <br>
   
 </div>
-
+<div>
+    
+  <div class="container">
+    <div>
+      <h2 style="text-align: center" >Thou User's Articles</h2>
+    </div>
+      <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-6">
+          {% for post in post_list%}
+            
+            <div class="card" style="width: 33rem;">
+              <img src="/media/{{post.title_image}}" class="card-img-top" alt="...">
+              <div class="card-body">
+                <h5 class="card-title">{{ post.title }}</h5>
+                {% for user in user_list %}
+                  {% if user.id == post.author_id %}
+                    <h6 class="card-title">{{ user.first_name }} {{ user.last_name }}</h6>
+                  {% endif %}
+                {% endfor %}
+                <p class="card-text">{{ post.content|slice:":50" }}</p>
+                <a href="{% url 'blog:post_detail' post.id %}" class="btn btn-primary">Read More &rarr;</a>
+              </div>
+            </div>
+            
+          <br>
+          {% endfor %}
+        </div>
+        <div class="col">
+        </div>
+        </div>  
+    </div>
+  <br>
+  
+</div>
 {% endblock %}
 

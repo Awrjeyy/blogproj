@@ -20,6 +20,8 @@ from .forms import  UserUpdate, ProfileUpdate, PWResetForm, PWordChangeForm
 from .models import CustomUser, Profile
 from blog.models import Post
 from django.utils.http import urlsafe_base64_encode
+from django.core.paginator import Paginator
+
 # Create your views here.
 
 from .forms import LoginForm, RegisterForm
@@ -88,10 +90,23 @@ class IndexView(TemplateView):
     def get(self, request):
         # import pdb; pdb.set_trace()
         profile_list = Profile.objects.all().order_by('-id')
+        p = Paginator(profile_list, 5)  # creating a paginator object
+        # getting the desired page number from url
+        page_number = request.GET.get('page')
+        
+        try:
+            page_obj = p.get_page(page_number)  # returns the desired page object
+        except PageNotAnInteger:
+            # if page_number is not an integer then assign the first page
+            page_obj = p.page(1)
+        except EmptyPage:
+            # if page is empty then return last page
+            page_obj = p.page(p.num_pages)
         user_list = CustomUser.objects.all()
         context = {
             'profile_list': profile_list,
             'user_list': user_list,
+            'page_obj': page_obj
         }
         return render(request, self.template_name, context)
 
@@ -99,7 +114,7 @@ class IndexView(TemplateView):
 class LoginView(TemplateView):#TemplateView
     
     template_name = 'users/login.html'
-
+    #gets the form and display in designated link
     def get(self, request):
         form = LoginForm
         return render(request, 'users/login.html', {"form":form})
@@ -109,13 +124,13 @@ class LoginView(TemplateView):#TemplateView
 
         # import pdb; pdb.set_trace()
         if form.is_valid():
-            username = request.POST['email']
+            username = request.POST['email']#grabs the field email and password
             password = request.POST['password']
 
             user = authenticate(request, username=username, password=password)
             # import pdb; pdb.set_trace()
             if user is not None:
-                login(request, user)
+                login(request, user)#if user is in the system will login and redirect
                 return redirect('users:index')
             else:
                 form = LoginForm(request.POST)
@@ -213,7 +228,7 @@ class ProfileView(TemplateView):
     def get(self, request, id):
         # import pdb; pdb.set_trace()
         logged_user = request.user.id#initialize the logged in user id
-        temp_id = Profile.objects.get(id=id)#grabs the user_id from Profile database
+        temp_id = Profile.objects.get(user_id=id)#grabs the user_id from Profile database
         followers = CustomUser.objects.filter(user_following__id=temp_id.user_id)#profile.user_id will crossreference with users_following database
         following = CustomUser.objects.filter(following__id=temp_id.user_id)#trust me it looks funky so trial and error mode cuz it wont say
                                                                             #followers or following its going to be from_customuser_id and 
@@ -225,9 +240,30 @@ class ProfileView(TemplateView):
             isFollowing = True
         else:
             isFollowing = False
-        p_user = Profile.objects.get(id=id)#Gets desired user's profile
+        p_user = Profile.objects.get(user_id=id)#Gets desired user's profile
         userid = CustomUser.objects.get(id=p_user.user_id)#Gets desired user's id
         totalfollowing = userid.following.count()
+        post_list = Post.objects.filter(author_id=userid.id)
+        context = {
+            'following': following,
+            'followers': followers,
+            'totalfollowings': totalfollowings,
+            'totalfollowers': totalfollowers,
+            'isFollowing': isFollowing,
+            'userid': userid,
+            'p_user': p_user,
+            'post_list': post_list,
+        }
+        return render(request, 'users/profile.html', context)
+        
+
+    
+
+class UpdateProfileView(TemplateView):
+    template_name = "users/update_profile.html"
+    def get(self, request, id):
+        p_user = Profile.objects.get(user_id=id)
+        userid = CustomUser.objects.get(id=p_user.user_id)
         
         initial_userdata = {
             'first_name': userid.first_name,
@@ -240,19 +276,14 @@ class ProfileView(TemplateView):
         user_form = UserUpdate(initial_userdata)
         profile_form = ProfileUpdate(initial_profdata)
         context = {
-            'following': following,
-            'followers': followers,
-            'totalfollowings': totalfollowings,
-            'totalfollowers': totalfollowers,
-            'isFollowing': isFollowing,
+            
             'profile_form': profile_form,
             'user_form': user_form,
             'userid': userid,
             'p_user': p_user,
             
         }
-        return render(request, 'users/profile.html', context)
-        
+        return render(request, 'users/update_profile.html', context)
 
     def post(self, request, id):
         #
@@ -271,7 +302,7 @@ class ProfileView(TemplateView):
             user_form.save()
             profile_form.save()
             messages.success(request, f'Account has been updated')
-            return redirect('users:profile', p_user.id)
+            return HttpResponseRedirect(reverse('users:profile', args=[p_user.user_id]))
 
         else:
             # import pdb; pdb.set_trace()
@@ -292,9 +323,7 @@ class ProfileView(TemplateView):
 
         }
 
-        return render(request, 'users/profile.html', context)
-
-    
+        return render(request, 'users/update_profile.html', context)
 
 
 

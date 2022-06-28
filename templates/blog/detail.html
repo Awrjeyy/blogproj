@@ -53,6 +53,7 @@
             </div>
             
         </div>
+        
       </div>
       <div class="col">
       </div>
@@ -60,13 +61,13 @@
   </div>  
 </div>
 
-
+<div class="container">
 {% if user.is_authenticated %}
-<div class="row mt-5">
+<div class="row mt-5 align-items-center">
 <div class="col-lg-6 offset-lg-3">
 <h3>Leave a comment</h3>
 <div class="card-body">
-<form method='POST'>
+<form method='POST' novalidate>
  <div class="form-group">
   {% csrf_token %}
   <div class="col-2">
@@ -80,7 +81,7 @@
 </div>
 <br>
 {% else %}
-<div class="row mt-5">
+<div class="row mt-5 align-items-center">
 <div class="col-lg-6 offset-lg-3">
 <h5>You must <a href="{% url 'login' %}">Log In</a> to comment</h5>
 
@@ -88,7 +89,7 @@
 </div>
 {% endif %}  
 {% if comments %}
-<div class="row mt-5">
+<div class="row mt-5 align-items-center">
 <div class="col-lg-6 offset-lg-3">
   Comment{{ comments.count|pluralize }}
   <span class="badge badge-dark ml-2">{{ comments.count }}</span>
@@ -111,5 +112,5 @@
 {% endfor %}
 
 {% endif %}
-
+</div>
 {% endblock %}

@@ -10,8 +10,8 @@ from .models import Profile, CustomUser
 
 class RegisterForm(forms.ModelForm):
     alpha = RegexValidator(r'^[a-zA-Z]*$', 'Only alphabet characters are allowed.')
-    first_name = forms.CharField(label="First name", required=True, max_length=100, validators=[alpha])
-    last_name = forms.CharField(label="Last name", required=True, max_length=100, validators=[alpha])
+    first_name = forms.CharField(label="First name", required=True, max_length=100, validators=[alpha], widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(label="Last name", required=True, max_length=100, validators=[alpha], widget=forms.TextInput(attrs={'class': 'form-control'}))
     password1 = forms.CharField(label="Password", required=True, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label="Confirm Password", required=True, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
@@ -27,30 +27,46 @@ class RegisterForm(forms.ModelForm):
 
 
 class LoginForm(forms.Form):
-    email = forms.CharField(label='Email', required=True, max_length=100)
-    password = forms.CharField(label='Password',widget=forms.PasswordInput())
+    email = forms.CharField(label='Email', required=True, max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}),
+                            error_messages = {'required': 'Put an email',
+                                                'invalid': 'Your Email Confirmation Not Equal With Your Email'})
+    password = forms.CharField(label='Password',widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+                            error_messages = {'required': 'Put a password',
+                                            'invalid': 'Your Input a wrong Password'})
 
     field = (
         'email',
         'password'
     )
-
+    
     
     def auth(self, request):
-        # import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
         auth_email = self.cleaned_data.get('email')
         pword = self.cleaned_data.get('password')
-        return authenticate(request, username=auth_email, password=pword)
+        email_qs = CustomUser.objects.filter(email=auth_email)
+        if email_qs.count() == 0:
+            raise  forms.ValidationError("The user does not exists")
+        else:
+            if auth_email and pword:
+                user = authenticate(request, username=auth_email, password=pword)
+                if not user:
+                    raise forms.ValidationError('Incorrect Password')
+        return super(LoginForm,self).auth(self, request)
+
+        
     
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if email is None:
             raise forms.ValidationError({'email': ["Put email."]})
+        return email
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
         if password is None:
             raise forms.ValidationError({'password': ["Put password."]})
+        return password
             
 
 
